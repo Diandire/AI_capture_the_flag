@@ -86,7 +86,9 @@ public class AI : MonoBehaviour
     private InventoryController _agentInventory;
     // This is the script containing the AI agents actions
     // e.g. agentScript.MoveTo(enemy);
-    private AgentActions _agentActions;
+    private Behaviours _agentActions;
+
+    private BehaviourTree behaviour;
 
 
     // Use this for initialization
@@ -94,14 +96,16 @@ public class AI : MonoBehaviour
     {
         // Initialise the accessable script components
         _agentData = GetComponent<AgentData>();
-        _agentActions = GetComponent<AgentActions>();
+        _agentActions = GetComponent<Behaviours>();
         _agentSenses = GetComponentInChildren<Sensing>();
         _agentInventory = GetComponentInChildren<InventoryController>();
+        behaviour=new BehaviourTree(_agentActions);
     }
 
     // Update is called once per frame
     void Update ()
     {
         // Run your AI code in here
+        behaviour.Update();
     }
 }

@@ -29,7 +29,7 @@ public class Sensing : MonoBehaviour
     }
 
     // Use this for initialization
-    void Start()
+    public void Start()
     {
         _agentData = GetComponentInParent<AgentData>();
     }

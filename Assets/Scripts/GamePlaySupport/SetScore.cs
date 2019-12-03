@@ -9,8 +9,9 @@ using UnityEngine.UI;
 /// </summary>
 public class SetScore : MonoBehaviour
 {
-    public GameObject EnemyFlag;
+    public GameObject EnemyFlag,FriendlyFlag;
     public int Score;
+    public Text scoreTextObject;
 
     private bool _enemyFlagInBase;
     private const float ScoreTickDuration = 1.0f;
@@ -25,7 +26,28 @@ public class SetScore : MonoBehaviour
         if(other.gameObject.name.Equals(EnemyFlag.name))
         {
             _enemyFlagInBase = true;
+            Debug.Log("Scored a point");
+            switch(other.gameObject.name)
+            {
+                case Names.RedFlag :
+                    BlackBoard.RedFlagTaken=true;break;
+
+                case Names.BlueFlag :
+                    BlackBoard.BlueFlagTaken=true;break;
+            }
             StartCoroutine(UpdateScore());
+        }
+        else if(other.gameObject.name.Equals(FriendlyFlag.name))
+        {
+            other.transform.position=other.GetComponent<Flag>().FlagSpawnLocation;
+            switch(other.gameObject.name)
+            {
+                case Names.RedFlag :
+                    BlackBoard.RedFlagInBase=true;break;
+
+                case Names.BlueFlag :
+                    BlackBoard.BlueFlagInBase=true;break;
+            }
         }
     }
 
@@ -39,6 +61,25 @@ public class SetScore : MonoBehaviour
         if (other.gameObject.name.Equals(EnemyFlag.name))
         {
             _enemyFlagInBase = false;
+            switch(other.gameObject.name)
+            {
+                case Names.RedFlag :
+                    BlackBoard.RedFlagTaken=false;break;
+
+                case Names.BlueFlag :
+                    BlackBoard.BlueFlagTaken=false;break;
+            }
+        }
+        else if(other.gameObject.name.Equals(FriendlyFlag.name))
+        {
+            switch(other.gameObject.name)
+            {
+                case Names.RedFlag :
+                    BlackBoard.RedFlagInBase=false;break;
+
+                case Names.BlueFlag :
+                    BlackBoard.BlueFlagInBase=false;break;
+            }
         }
     }
 
@@ -54,6 +95,8 @@ public class SetScore : MonoBehaviour
         {
             yield return new WaitForSeconds(ScoreTickDuration);
             Score++;
+            scoreTextObject.text=Score.ToString();
         }
     }
+    
 }

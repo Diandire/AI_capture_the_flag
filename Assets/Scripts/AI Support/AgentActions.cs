@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
+using System;
 
 /// <summary>
 /// This class provides an interface for all the actions the AI agent can take in the world
@@ -12,27 +14,29 @@ public class AgentActions : MonoBehaviour
     // The name of the animation for the sword swing
     private const string AttackAnimationTrigger = "Attack";
 
-    private AgentData _agentData;
+    protected AgentData _agentData;
     // Gives access to the agent senses
-    private Sensing _agentSenses;
+    protected Sensing _agentSenses;
     // gives access to the agents inventory
-    private InventoryController _agentInventory;
+    protected InventoryController _agentInventory;
 
     private UnityEngine.AI.NavMeshAgent _navAgent;
     private Animator _swordAnimator;
 
     // Show the AI mood
     private AiMoodIconController _agentMoodIndicator;
+    protected GameObject targetToKill;
     public AiMoodIconController AiMoodIndicator
     {
         get { return _agentMoodIndicator; }
     }
 
     // Use this for initialization, get references to all the component scripts we'll need
-    void Start()
+    public void Start()
     {
         _agentData = GetComponent<AgentData>();
         _agentSenses = GetComponentInChildren<Sensing>();
+        _agentSenses.Start();
         _agentInventory = GetComponentInChildren<InventoryController>();
         _navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         _swordAnimator = GetComponentInChildren<Animator>();
@@ -94,13 +98,13 @@ public class AgentActions : MonoBehaviour
             return true;
         }
 
-        return false;
+        return false;;
     }
 
     /// <summary>
     /// Move to a nearby random location
     /// </summary>
-    public void MoveToRandomLocation()
+    public bool MoveToRandomLocation()
     {
         // Choose a new direction
         Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * _agentData.Speed;
@@ -111,7 +115,9 @@ public class AgentActions : MonoBehaviour
         if (TestDestination(randomDirection, out destination))
         {
             _navAgent.destination = destination;
+            return true;
         }
+        else return false;
     }
 
     /// <summary>
@@ -119,20 +125,24 @@ public class AgentActions : MonoBehaviour
     /// A collected item is no longer visible to other AIs with the exception of the flag
     /// </summary>
     /// <param name="item">The item to pick up</param>
-    public void CollectItem(GameObject item)
+    public NodeStates CollectItem(GameObject item)
     {
         if (item != null)
         {
             if (_agentSenses.IsItemInReach(item))
             {
+                Debug.Log("Item in reach");
                 // If its collectable add it to the inventory
                 if (item.GetComponent<Collectable>() != null)
                 {
                     item.GetComponent<Collectable>().Collect(_agentData);
                     _agentInventory.AddItem(item);
+                    Debug.Log("Picked up item");
+                    return NodeStates.SUCCESS;
                 }
             }
         }
+        return NodeStates.FAILURE;
     }
 
     /// <summary>
@@ -140,7 +150,7 @@ public class AgentActions : MonoBehaviour
     /// </summary>
     /// <param name="item">The item GameObject</param>
     /// <returns>true if the item was successfully used, false otherwise</returns>
-    public void UseItem(GameObject item)
+    public NodeStates UseItem(GameObject item)
     {
         if (item != null)
         {
@@ -149,8 +159,10 @@ public class AgentActions : MonoBehaviour
             {
                 _agentInventory.RemoveItem(item.name);
                 item.GetComponent<IUsable>().Use(_agentData);
+                return NodeStates.SUCCESS;
             }
         }
+        return NodeStates.FAILURE;
     }
 
     /// <summary>
@@ -158,7 +170,7 @@ public class AgentActions : MonoBehaviour
     /// A dropped item becomes visible and collectable
     /// </summary>
     /// <param name="item">The item to drop</param>
-    public void DropItem(GameObject item)
+    public NodeStates DropItem(GameObject item)
     {
             // Check we actually have it and its collectable
             if (_agentInventory.HasItem(item.name) && item.GetComponent<Collectable>() != null)
@@ -176,14 +188,16 @@ public class AgentActions : MonoBehaviour
                     _agentInventory.RemoveItem(item.name);
 
                     item.GetComponent<Collectable>().Drop(_agentData, dropPosition);
+                    return NodeStates.SUCCESS;
                 }
             }
+        return NodeStates.FAILURE;
     }
 
     /// <summary>
     /// Drop every item in the inventory
     /// </summary>
-    public void DropAllItems()
+    public NodeStates DropAllItems()
     {
         // Get a list of all the items in the inventory by key
         string[] inventoryKeys = _agentInventory.Items.Keys.ToArray();
@@ -197,14 +211,17 @@ public class AgentActions : MonoBehaviour
                 DropItem(item);
             }
         }
+        return NodeStates.SUCCESS;
     }
 
     /// <summary>
     /// Attack an enemy AI if it is within range, a powerup will increase the damage done
     /// </summary>
     /// <param name="target">The target to attack</param>
-    public void AttackEnemy(GameObject target)
+    public NodeStates AttackEnemy(GameObject target)
     {
+        try
+        {
         // Only attack the enemy
         if (target.CompareTag(_agentData.EnemyTeamTag))
         {
@@ -226,15 +243,19 @@ public class AgentActions : MonoBehaviour
                     }
                     target.GetComponent<AgentData>().TakeDamage(actualDamage);
                 }
+                return NodeStates.SUCCESS;
             }
         }
+        }
+        catch(MissingReferenceException){return NodeStates.FAILURE;}
+        return NodeStates.FAILURE;
     }
 
     /// <summary>
     /// Flee from an object by moving in the opposite direction
     /// </summary>
     /// <param name="enemy">The object to flee from (expected to be an enemy AI)</param>
-    public void Flee(GameObject enemy)
+    public NodeStates Flee(GameObject enemy)
     {
         // Turn away from the threat
         transform.rotation = Quaternion.LookRotation(transform.position - enemy.transform.position);
@@ -247,5 +268,8 @@ public class AgentActions : MonoBehaviour
         // Check for a point to flee to
         UnityEngine.AI.NavMesh.SamplePosition(runTo, out navHit, _agentData.Speed, 1 << UnityEngine.AI.NavMesh.GetAreaFromName("Walkable"));
         _navAgent.SetDestination(navHit.position);
+        return NodeStates.SUCCESS;
     }
+   
+
 }
