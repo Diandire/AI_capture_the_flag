@@ -131,14 +131,11 @@ public class AgentActions : MonoBehaviour
         {
             if (_agentSenses.IsItemInReach(item))
             {
-                Debug.Log("Item in reach");
                 // If its collectable add it to the inventory
                 if (item.GetComponent<Collectable>() != null)
                 {
                     item.GetComponent<Collectable>().Collect(_agentData);
-                    _agentInventory.AddItem(item);
-                    Debug.Log("Picked up item");
-                    return NodeStates.SUCCESS;
+                    if(_agentInventory.AddItem(item)) return NodeStates.SUCCESS;                  
                 }
             }
         }

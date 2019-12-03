@@ -6,7 +6,7 @@ public class Behaviours : AgentActions
 {
  public NodeStates MoveToEnemyFlag()
     {
-        if(CheckForEnemyFlag())
+        if(CheckForEnemyFlag()&&CheckForFriendlyFC()==null)
         {
         switch(_agentData.EnemyTeam)
         {
@@ -23,7 +23,7 @@ public class Behaviours : AgentActions
             default : return NodeStates.FAILURE;
         }
         }
-        else{Debug.Log("Flag already taken"); return NodeStates.FAILURE;}
+        else return NodeStates.FAILURE;
     }
 
     public NodeStates MoveToFriendlyFlag()
@@ -48,6 +48,7 @@ public class Behaviours : AgentActions
     {
         
         Debug.Log(BlackBoard.RedFlagTaken);
+        if(CheckForFriendlyFC()!=null)return NodeStates.FAILURE;
         switch(_agentData.EnemyTeam)
         {
             case AgentData.Teams.RedTeam : return CollectItem(GameObject.Find(Names.RedFlag));
@@ -97,7 +98,16 @@ public class Behaviours : AgentActions
         List<GameObject> enemiesInView=_agentSenses.GetEnemiesInView();
         if(enemiesInView.Count>0)
         {
+            float distanceToTarget=Vector3.Distance(enemiesInView[0].transform.position,transform.position);
             targetToKill=enemiesInView[0];
+            foreach(GameObject enemy in enemiesInView)
+            {
+                if(Vector3.Distance(enemiesInView[0].transform.position,transform.position)<distanceToTarget)
+                {
+                    distanceToTarget=Vector3.Distance(enemiesInView[0].transform.position,transform.position);
+                    targetToKill=enemy;
+                }
+            }
             return NodeStates.SUCCESS;
         }
         return NodeStates.FAILURE;
@@ -105,18 +115,16 @@ public class Behaviours : AgentActions
 
     public NodeStates WalkToTarget()
     {
-        if(targetToKill==null){Debug.Log("no target found"); return NodeStates.FAILURE;}
-        else if(MoveTo(targetToKill)){Debug.Log("Moving to target"); return _agentSenses.IsInAttackRange(targetToKill)?NodeStates.SUCCESS:NodeStates.RUNNING;}
+        if(targetToKill==null)return NodeStates.FAILURE;
+        else if(MoveTo(targetToKill)) return _agentSenses.IsInAttackRange(targetToKill)?NodeStates.SUCCESS:NodeStates.RUNNING;
         else return NodeStates.FAILURE;
     }
 
     public NodeStates TargetEnemyFC()
     {
-        Debug.Log("Checking for enemy FC");
         if(CheckForMyFlag()||CheckForEnemyFC()==null)return NodeStates.FAILURE;
         else 
         {
-            Debug.Log("Found enemy FC");
             targetToKill=CheckForEnemyFC();
             return NodeStates.SUCCESS;
         }
@@ -125,6 +133,17 @@ public class Behaviours : AgentActions
     public GameObject CheckForEnemyFC()
     {
           switch(_agentData.EnemyTeam)
+        {
+            case AgentData.Teams.RedTeam : return BlackBoard.RedFlagCarrier;
+
+            case AgentData.Teams.BlueTeam : return BlackBoard.BlueFlagCarrier;
+        }
+        return null;
+    }
+
+    public GameObject CheckForFriendlyFC()
+    {
+          switch(_agentData.FriendlyTeam)
         {
             case AgentData.Teams.RedTeam : return BlackBoard.RedFlagCarrier;
 
@@ -164,19 +183,9 @@ public class Behaviours : AgentActions
 
     public NodeStates MoveToMyFC()
     {
-        switch(_agentData.FriendlyTeam)
-        {
-            case AgentData.Teams.RedTeam :
-            if(BlackBoard.RedFlagCarrier==null)return NodeStates.FAILURE;
-            else if(MoveTo(BlackBoard.RedFlagCarrier))return _agentSenses.IsInAttackRange(BlackBoard.RedFlagCarrier)?NodeStates.SUCCESS:NodeStates.RUNNING;
-            else return NodeStates.FAILURE;
-
-             case AgentData.Teams.BlueTeam :
-            if(BlackBoard.BlueFlagCarrier==null)return NodeStates.FAILURE;
-            else if(MoveTo(BlackBoard.BlueFlagCarrier))return _agentSenses.IsInAttackRange(BlackBoard.BlueFlagCarrier)?NodeStates.SUCCESS:NodeStates.RUNNING;
-            else return NodeStates.FAILURE;
-        }
-        return NodeStates.FAILURE;
+        if(CheckForFriendlyFC()==null)return NodeStates.FAILURE;
+        else if(MoveTo(CheckForFriendlyFC()))return _agentSenses.IsInAttackRange(CheckForFriendlyFC())?NodeStates.SUCCESS:NodeStates.RUNNING;
+        else return NodeStates.FAILURE;
     }
 
     public NodeStates HealMySelf()
@@ -187,6 +196,7 @@ public class Behaviours : AgentActions
     public NodeStates MoveToHealthKit()
     {
         if(GameObject.Find(Names.HealthKit)==null||_agentInventory.HasItem(Names.HealthKit)||GameObject.Find(Names.HealthKit).layer==0)return NodeStates.FAILURE;
+        if(Random.Range(0f,1f)<0.1f)return NodeStates.FAILURE;
         else if(MoveTo(GameObject.Find(Names.HealthKit)))
              if(_agentSenses.IsItemInReach(GameObject.Find(Names.HealthKit))&&CollectItem(GameObject.Find(Names.HealthKit))==NodeStates.SUCCESS)return NodeStates.SUCCESS;
              else return NodeStates.RUNNING;

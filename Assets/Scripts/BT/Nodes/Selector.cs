@@ -6,15 +6,16 @@ public class Selector : Node {
     /** The child nodes for this selector */ 
     protected List<Node> m_nodes = new List<Node>(); 
     private int runningNode=0;
- 
+    private string m_name="";
     /** The constructor requires a lsit of child nodes to be  
      * passed in*/ 
     public Selector(List<Node> nodes) { 
         m_nodes = nodes; 
     }
 
-     public Selector() { 
+     public Selector(string name) { 
         m_nodes = new List<Node>(); 
+        m_name=name;
     }  
  
     /* If any of the children reports a success, the selector will 
@@ -22,6 +23,7 @@ public class Selector : Node {
      * it will report a failure instead.*/ 
     public override NodeStates Evaluate() {
         if(runningNode>=m_nodes.Count)runningNode=0;
+        Debug.Log(m_name);
         switch (m_nodes[runningNode].Evaluate()) 
         { 
             case NodeStates.FAILURE: 
@@ -36,6 +38,7 @@ public class Selector : Node {
                 m_nodeState = NodeStates.RUNNING; 
                 return m_nodeState;
         }
+        if(m_nodeState==NodeStates.FAILURE&&runningNode<=m_nodes.Count)return NodeStates.RUNNING;
         return m_nodeState; 
     }
 

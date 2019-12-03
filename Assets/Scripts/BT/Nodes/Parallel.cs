@@ -5,7 +5,7 @@ using UnityEngine;
 public class Parallel : Node { 
     /** The child nodes for this selector */ 
     protected List<Node> m_nodes = new List<Node>(); 
- 
+    private string m_name="";
  
     /** The constructor requires a lsit of child nodes to be  
      * passed in*/ 
@@ -13,8 +13,9 @@ public class Parallel : Node {
         m_nodes = nodes; 
     }
 
-     public Parallel() { 
+     public Parallel(string name) { 
         m_nodes = new List<Node>(); 
+        m_name=name;
     }  
  
     /* If any of the children reports a success, the selector will 
@@ -23,6 +24,7 @@ public class Parallel : Node {
     public override NodeStates Evaluate() {
         m_nodeState = NodeStates.FAILURE;  
         foreach (Node node in m_nodes) { 
+            Debug.Log(m_name);
             switch (node.Evaluate()) { 
                 case NodeStates.FAILURE: 
                     continue; 
