@@ -5,7 +5,7 @@ using UnityEngine;
 public class BlackBoard : MonoBehaviour
 {
     public static bool BlueFlagTaken=false,RedFlagTaken=false,BlueFlagInBase=true,RedFlagInBase=true;
-    public static GameObject RedFlagCarrier,BlueFlagCarrier;
+    public GameObject RedFlagCarrier,BlueFlagCarrier;
 
     public bool PowerUpAvailable()
     {

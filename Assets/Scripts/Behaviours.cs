@@ -78,10 +78,10 @@ public class Behaviours : AgentActions
         switch(_agentData.FriendlyTeam)
         {
             case AgentData.Teams.RedTeam : 
-            return (!BlackBoard.RedFlagInBase);
+            return (!BlackBoard.RedFlagInBase||_agentData.HasFriendlyFlag);
 
             case AgentData.Teams.BlueTeam :
-            return (!BlackBoard.BlueFlagInBase);
+            return (!BlackBoard.BlueFlagInBase||_agentData.HasFriendlyFlag);
 
             default :
             return false;
@@ -93,10 +93,10 @@ public class Behaviours : AgentActions
         switch(_agentData.EnemyTeam)
         {
             case AgentData.Teams.RedTeam : 
-            return (_agentData.HasEnemyFlag||(!BlackBoard.RedFlagTaken&&BlackBoard.RedFlagCarrier==null));
+            return (_agentData.HasEnemyFlag||(!BlackBoard.RedFlagTaken&&blackBoard.RedFlagCarrier==null));
 
             case AgentData.Teams.BlueTeam :
-            return (_agentData.HasEnemyFlag||(!BlackBoard.BlueFlagTaken&&BlackBoard.BlueFlagCarrier==null));
+            return (_agentData.HasEnemyFlag||(!BlackBoard.BlueFlagTaken&&blackBoard.BlueFlagCarrier==null));
 
             default :
             return false;
@@ -149,9 +149,9 @@ public class Behaviours : AgentActions
     {
           switch(_agentData.EnemyTeam)
         {
-            case AgentData.Teams.RedTeam : return BlackBoard.RedFlagCarrier;
+            case AgentData.Teams.RedTeam : return blackBoard.RedFlagCarrier;
 
-            case AgentData.Teams.BlueTeam : return BlackBoard.BlueFlagCarrier;
+            case AgentData.Teams.BlueTeam : return blackBoard.BlueFlagCarrier;
         }
         return null;
     }
@@ -160,9 +160,9 @@ public class Behaviours : AgentActions
     {
           switch(_agentData.FriendlyTeam)
         {
-            case AgentData.Teams.RedTeam : return BlackBoard.RedFlagCarrier;
+            case AgentData.Teams.RedTeam : return blackBoard.RedFlagCarrier;
 
-            case AgentData.Teams.BlueTeam : return BlackBoard.BlueFlagCarrier;
+            case AgentData.Teams.BlueTeam : return blackBoard.BlueFlagCarrier;
         }
         return null;
     }

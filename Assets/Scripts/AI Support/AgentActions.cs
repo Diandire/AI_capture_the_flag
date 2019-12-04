@@ -126,7 +126,7 @@ public class AgentActions : MonoBehaviour
     /// <param name="item">The item to pick up</param>
     public NodeStates CollectItem(GameObject item)
     {
-        if (item != null)
+        if (item != null&&item.layer!=0)
         {
             if (_agentSenses.IsItemInReach(item))
             {

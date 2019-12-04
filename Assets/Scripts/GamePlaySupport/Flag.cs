@@ -38,12 +38,12 @@ public class Flag : Collectable
         {
             case Names.RedFlag :
                 //BlackBoard.RedFlagTaken=true;
-                BlackBoard.RedFlagCarrier=agentData.gameObject;
+                FindObjectOfType<BlackBoard>().RedFlagCarrier=agentData.gameObject;
                 break;
             
             case Names.BlueFlag :
                 //BlackBoard.BlueFlagTaken=true;
-                BlackBoard.BlueFlagCarrier=agentData.gameObject;
+                FindObjectOfType<BlackBoard>().BlueFlagCarrier=agentData.gameObject;
                 break;
 
         }
@@ -67,11 +67,11 @@ public class Flag : Collectable
         switch(gameObject.name)
         {
             case Names.RedFlag :
-                BlackBoard.RedFlagCarrier=null;
+                FindObjectOfType<BlackBoard>().RedFlagCarrier=null;
                 break;
             
             case Names.BlueFlag :
-                BlackBoard.BlueFlagCarrier=null;
+                FindObjectOfType<BlackBoard>().BlueFlagCarrier=null;
                 break;
 
         }
