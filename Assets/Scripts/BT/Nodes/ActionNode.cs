@@ -20,7 +20,7 @@ public class ActionNode : Node {
  
     /* Evaluates the node using the passed in delegate and  
      * reports the resulting state as appropriate */ 
-    public override NodeStates Evaluate() { 
+    public override NodeStates Tick() { 
         Debug.Log(m_name);
         switch (m_action()) { 
             case NodeStates.SUCCESS: 

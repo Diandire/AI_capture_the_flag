@@ -25,14 +25,13 @@ public class AgentActions : MonoBehaviour
 
     // Show the AI mood
     private AiMoodIconController _agentMoodIndicator;
-    protected GameObject targetToKill;
     public AiMoodIconController AiMoodIndicator
     {
         get { return _agentMoodIndicator; }
     }
 
     // Use this for initialization, get references to all the component scripts we'll need
-    public void Start()
+    public virtual void Start()
     {
         _agentData = GetComponent<AgentData>();
         _agentSenses = GetComponentInChildren<Sensing>();

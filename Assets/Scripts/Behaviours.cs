@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class Behaviours : AgentActions
 {
+    private GameObject targetAgent;
+    private BlackBoard blackBoard;
+
+    public override void Start() 
+    {
+        base.Start();
+        blackBoard=GameObject.FindObjectOfType<BlackBoard>();    
+    }
+
  public NodeStates MoveToEnemyFlag()
     {
-        if(CheckForEnemyFlag()&&CheckForFriendlyFC()==null)
-        {
         switch(_agentData.EnemyTeam)
         {
             case AgentData.Teams.RedTeam : 
@@ -22,8 +29,6 @@ public class Behaviours : AgentActions
             
             default : return NodeStates.FAILURE;
         }
-        }
-        else return NodeStates.FAILURE;
     }
 
     public NodeStates MoveToFriendlyFlag()
@@ -46,9 +51,6 @@ public class Behaviours : AgentActions
 
     public NodeStates PickUpEnemyFlag()
     {
-        
-        Debug.Log(BlackBoard.RedFlagTaken);
-        if(CheckForFriendlyFC()!=null)return NodeStates.FAILURE;
         switch(_agentData.EnemyTeam)
         {
             case AgentData.Teams.RedTeam : return CollectItem(GameObject.Find(Names.RedFlag));
@@ -75,22 +77,30 @@ public class Behaviours : AgentActions
     {
         switch(_agentData.FriendlyTeam)
         {
-            case AgentData.Teams.RedTeam : return BlackBoard.RedFlagInBase;
+            case AgentData.Teams.RedTeam : 
+            return (!BlackBoard.RedFlagInBase);
 
-            case AgentData.Teams.BlueTeam : return BlackBoard.BlueFlagInBase;
+            case AgentData.Teams.BlueTeam :
+            return (!BlackBoard.BlueFlagInBase);
+
+            default :
+            return false;
         }
-        return false;
     }
 
     public bool CheckForEnemyFlag()
     {
         switch(_agentData.EnemyTeam)
         {
-            case AgentData.Teams.RedTeam : return !BlackBoard.RedFlagTaken;
+            case AgentData.Teams.RedTeam : 
+            return (_agentData.HasEnemyFlag||(!BlackBoard.RedFlagTaken&&BlackBoard.RedFlagCarrier==null));
 
-            case AgentData.Teams.BlueTeam : return !BlackBoard.BlueFlagTaken;
+            case AgentData.Teams.BlueTeam :
+            return (_agentData.HasEnemyFlag||(!BlackBoard.BlueFlagTaken&&BlackBoard.BlueFlagCarrier==null));
+
+            default :
+            return false;
         }
-        return false;
     }
 
     public NodeStates LookForEnemy()
@@ -99,13 +109,13 @@ public class Behaviours : AgentActions
         if(enemiesInView.Count>0)
         {
             float distanceToTarget=Vector3.Distance(enemiesInView[0].transform.position,transform.position);
-            targetToKill=enemiesInView[0];
+            targetAgent=enemiesInView[0];
             foreach(GameObject enemy in enemiesInView)
             {
                 if(Vector3.Distance(enemiesInView[0].transform.position,transform.position)<distanceToTarget)
                 {
                     distanceToTarget=Vector3.Distance(enemiesInView[0].transform.position,transform.position);
-                    targetToKill=enemy;
+                    targetAgent=enemy;
                 }
             }
             return NodeStates.SUCCESS;
@@ -113,19 +123,24 @@ public class Behaviours : AgentActions
         return NodeStates.FAILURE;
     }
 
+    public NodeStates FleeFromEnemy()
+    {
+        return Flee(targetAgent);
+    }
+
     public NodeStates WalkToTarget()
     {
-        if(targetToKill==null)return NodeStates.FAILURE;
-        else if(MoveTo(targetToKill)) return _agentSenses.IsInAttackRange(targetToKill)?NodeStates.SUCCESS:NodeStates.RUNNING;
+        if(targetAgent==null)return NodeStates.FAILURE;
+        else if(MoveTo(targetAgent)) return _agentSenses.IsInAttackRange(targetAgent)?NodeStates.SUCCESS:NodeStates.RUNNING;
         else return NodeStates.FAILURE;
     }
 
     public NodeStates TargetEnemyFC()
     {
-        if(CheckForMyFlag()||CheckForEnemyFC()==null)return NodeStates.FAILURE;
+        if(CheckForEnemyFC()==null)return NodeStates.FAILURE;
         else 
         {
-            targetToKill=CheckForEnemyFC();
+            targetAgent=CheckForEnemyFC();
             return NodeStates.SUCCESS;
         }
     }
@@ -152,15 +167,9 @@ public class Behaviours : AgentActions
         return null;
     }
 
-    public NodeStates StartFlagReturn()
-    {
-        if(CheckForMyFlag()||CheckForEnemyFC()!=null)return NodeStates.FAILURE;
-        else return NodeStates.SUCCESS;
-    }
-
     public NodeStates AttackTarget()
     {
-        return AttackEnemy(targetToKill);
+        return AttackEnemy(targetAgent);
     }
 
     public NodeStates ReturnToBase()
@@ -195,8 +204,7 @@ public class Behaviours : AgentActions
     }
     public NodeStates MoveToHealthKit()
     {
-        if(GameObject.Find(Names.HealthKit)==null||_agentInventory.HasItem(Names.HealthKit)||GameObject.Find(Names.HealthKit).layer==0)return NodeStates.FAILURE;
-        if(Random.Range(0f,1f)<0.1f)return NodeStates.FAILURE;
+        if(!blackBoard.HealthKitAvailable())return NodeStates.FAILURE;
         else if(MoveTo(GameObject.Find(Names.HealthKit)))
              if(_agentSenses.IsItemInReach(GameObject.Find(Names.HealthKit))&&CollectItem(GameObject.Find(Names.HealthKit))==NodeStates.SUCCESS)return NodeStates.SUCCESS;
              else return NodeStates.RUNNING;

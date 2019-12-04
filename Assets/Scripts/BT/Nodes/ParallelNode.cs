@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
  
-public class Parallel : Node { 
+public class ParallelNode : Node { 
     /** The child nodes for this selector */ 
     protected List<Node> m_nodes = new List<Node>(); 
     private string m_name="";
  
     /** The constructor requires a lsit of child nodes to be  
      * passed in*/ 
-    public Parallel(List<Node> nodes) { 
+    public ParallelNode(List<Node> nodes) { 
         m_nodes = nodes; 
     }
 
-     public Parallel(string name) { 
+     public ParallelNode(string name) { 
         m_nodes = new List<Node>(); 
         m_name=name;
     }  
@@ -21,11 +21,11 @@ public class Parallel : Node {
     /* If any of the children reports a success, the selector will 
      * immediately report a success upwards. If all children fail, 
      * it will report a failure instead.*/ 
-    public override NodeStates Evaluate() {
+    public override NodeStates Tick() {
         m_nodeState = NodeStates.FAILURE;  
         foreach (Node node in m_nodes) { 
             Debug.Log(m_name);
-            switch (node.Evaluate()) { 
+            switch (node.Tick()) { 
                 case NodeStates.FAILURE: 
                     continue; 
                 case NodeStates.SUCCESS: 

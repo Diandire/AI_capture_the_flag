@@ -37,4 +37,5 @@ public class TeamData : MonoBehaviour
             _thisTeamName += RedTeamName;
         }
     }
+    
 }

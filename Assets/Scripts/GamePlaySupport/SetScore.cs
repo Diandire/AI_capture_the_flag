@@ -27,7 +27,7 @@ public class SetScore : MonoBehaviour
         {
             _enemyFlagInBase = true;
             Debug.Log("Scored a point");
-            switch(other.gameObject.name)
+            switch(EnemyFlag.name)
             {
                 case Names.RedFlag :
                     BlackBoard.RedFlagTaken=true;break;
@@ -39,7 +39,6 @@ public class SetScore : MonoBehaviour
         }
         else if(other.gameObject.name.Equals(FriendlyFlag.name))
         {
-            other.transform.position=other.GetComponent<Flag>().FlagSpawnLocation;
             switch(other.gameObject.name)
             {
                 case Names.RedFlag :
