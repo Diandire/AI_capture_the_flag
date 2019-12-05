@@ -67,6 +67,7 @@
      <Compile Include="Assets\Scripts\BT\Nodes\ConditionNode.cs" />
      <Compile Include="Assets\Scripts\BT\Nodes\Node.cs" />
      <Compile Include="Assets\Scripts\BT\Nodes\ParallelNode.cs" />
+     <Compile Include="Assets\Scripts\BT\Nodes\RandomNode.cs" />
      <Compile Include="Assets\Scripts\BT\Nodes\SelectorNode.cs" />
      <Compile Include="Assets\Scripts\BT\Nodes\SequenceNode.cs" />
      <Compile Include="Assets\Scripts\Constants.cs" />

@@ -3,47 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
  
 public class SelectorNode : Node { 
-    /** The child nodes for this selector */ 
-    protected List<Node> m_nodes = new List<Node>(); 
+    protected List<Node> m_childNodes = new List<Node>(); 
     private int runningNode=0;
     private string m_name="";
-    /** The constructor requires a lsit of child nodes to be  
-     * passed in*/ 
-    public SelectorNode(List<Node> nodes) { 
-        m_nodes = nodes; 
+    //decides if the selector should lock into a node if it returns running or keep checking from the start every update
+    private bool m_lockSelection;
+
+    public SelectorNode(List<Node> nodes,bool lockSelection=true) { 
+        m_childNodes = nodes; 
+        m_lockSelection=lockSelection;
     }
 
-     public SelectorNode(string name) { 
-        m_nodes = new List<Node>(); 
+     public SelectorNode(string name, bool lockSelection=true) { 
+        m_childNodes = new List<Node>(); 
         m_name=name;
+        m_lockSelection=lockSelection;
     }  
  
-    /* If any of the children reports a success, the selector will 
-     * immediately report a success upwards. If all children fail, 
-     * it will report a failure instead.*/ 
+    ///<summary>
+    ///Ticks the child nodes until it finds one that does not fail.
+    ///Keeps ticking that child until it is successfull causing the selector to start checking from the first child again.
+    ///Or fails as well and the selector keeps checking the next child
+    ///</summary>
     public override NodeStates Tick() {
-        if(runningNode>=m_nodes.Count)runningNode=0;
+        if(runningNode>=m_childNodes.Count)runningNode=0;
         //Debug.Log(m_name);
-        switch (m_nodes[runningNode].Tick()) 
+        switch (m_childNodes[runningNode].Tick()) 
         { 
+            //on failure set the current node to the next one
             case NodeStates.FAILURE: 
                 m_nodeState = NodeStates.FAILURE; 
+                //if the current node is not the last one return running
+                if(runningNode<(m_childNodes.Count-1))m_nodeState=NodeStates.RUNNING; 
                 runningNode++;
-                break;                    
+                break;     
+            //on success return success and reset the current node               
             case NodeStates.SUCCESS: 
                 runningNode=0;
                 m_nodeState = NodeStates.SUCCESS; 
                 return m_nodeState;
+            //on running keep the current node if locked in else reset the current node
             case NodeStates.RUNNING: 
                 m_nodeState = NodeStates.RUNNING; 
+                if(!m_lockSelection)runningNode=0;
                 return m_nodeState;
         }
-        if(runningNode<(m_nodes.Count-1))m_nodeState=NodeStates.RUNNING; 
         return m_nodeState; 
     }
 
     public void AddChildNode(Node child)
     {
-        m_nodes.Add(child);
+        m_childNodes.Add(child);
     } 
 }

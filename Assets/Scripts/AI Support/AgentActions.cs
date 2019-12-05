@@ -253,6 +253,7 @@ public class AgentActions : MonoBehaviour
     /// <param name="enemy">The object to flee from (expected to be an enemy AI)</param>
     public NodeStates Flee(GameObject enemy)
     {
+        if(enemy==null)return NodeStates.FAILURE;
         // Turn away from the threat
         transform.rotation = Quaternion.LookRotation(transform.position - enemy.transform.position);
         Vector3 runTo = transform.position + transform.forward * _navAgent.speed;
