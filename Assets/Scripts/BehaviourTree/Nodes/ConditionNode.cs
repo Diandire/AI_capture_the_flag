@@ -20,15 +20,15 @@ public class ConditionNode : Node {
     ///On success either Ticks the child node if it has one or returns a success.
     ///If the condition fails the Node fails and the child does not get ticked.
     ///</summary>
-    public override NodeStates Tick() { 
-        Debug.Log(m_name);
+    public override NodeState Tick() { 
+        //Debug.Log(m_name);
         //if the condition returns true the child node if it exists gets ticked, otherwise returns a success
         if(m_condition()){
             if(m_childNode!=null)return m_childNode.Tick();
-            else return NodeStates.SUCCESS;
+            else return NodeState.SUCCESS;
         }
         //condition fails so node returns failure
-        else return NodeStates.FAILURE;
+        else return NodeState.FAILURE;
     }
 
     public void AddChildNode(Node child)

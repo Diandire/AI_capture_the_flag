@@ -5,10 +5,6 @@ using UnityEngine;
 public class ParallelNode : Node { 
     protected List<Node> m_childNodes = new List<Node>(); 
     private string m_name="";
- 
-    public ParallelNode(List<Node> nodes) { 
-        m_childNodes = nodes; 
-    }
 
      public ParallelNode(string name) { 
         m_childNodes = new List<Node>(); 
@@ -19,18 +15,18 @@ public class ParallelNode : Node {
     ///Ticks all children every time it is ticked.
     ///Only one child needs to bes successfull to report a success
     ///</summary>
-    public override NodeStates Tick() {
-        m_nodeState = NodeStates.FAILURE;  
+    public override NodeState Tick() {
+        m_nodeState = NodeState.FAILURE;  
         foreach (Node node in m_childNodes) { 
             Debug.Log(m_name);
             switch (node.Tick()) { 
-                case NodeStates.FAILURE: 
+                case NodeState.FAILURE: 
                     continue; 
-                case NodeStates.SUCCESS: 
-                    m_nodeState = NodeStates.SUCCESS; 
+                case NodeState.SUCCESS: 
+                    m_nodeState = NodeState.SUCCESS; 
                     continue; 
-                case NodeStates.RUNNING: 
-                    m_nodeState = NodeStates.RUNNING; 
+                case NodeState.RUNNING: 
+                    m_nodeState = NodeState.RUNNING; 
                     continue; 
             } 
         }     

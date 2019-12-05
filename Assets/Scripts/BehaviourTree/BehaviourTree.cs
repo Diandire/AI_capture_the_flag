@@ -18,16 +18,18 @@ public class BehaviourTree
         AttackEnemy.AddChildNode(new ActionNode("walk to target enemy",new ActionNode.ActionNodeDelegate(behaviours.WalkToTarget)));
         AttackEnemy.AddChildNode(new ActionNode("Attack my target",new ActionNode.ActionNodeDelegate(behaviours.AttackTarget)));
 
-
+        //target closest enemy and attack him
         SequenceNode KillAllEnemies=new SequenceNode("Kill enemies in sight");
         KillAllEnemies.AddChildNode(new ActionNode("Search for enemies",new ActionNode.ActionNodeDelegate(behaviours.LookForEnemy)));
-        KillAllEnemies.AddChildNode(AttackEnemy);
+        KillAllEnemies.AddChildNode(new ActionNode("Attack my target",new ActionNode.ActionNodeDelegate(behaviours.AttackTarget)));
         start.AddChildNode(KillAllEnemies);
 
+        //target closest enemy and flee from him
         SequenceNode FleeFromEnemies=new SequenceNode("Flee from enemy");
         FleeFromEnemies.AddChildNode(new ActionNode("Search for enemies",new ActionNode.ActionNodeDelegate(behaviours.LookForEnemy)));
         FleeFromEnemies.AddChildNode(new ActionNode("Run away",new ActionNode.ActionNodeDelegate(behaviours.FleeFromEnemy)));
 
+        //Get e health kit if below 50% health
         ConditionNode HealthCheck=new ConditionNode("check if health is critical",new ConditionNode.ConditionNodeDelegate(behaviours.CriticalHealthCheck));
 
         SequenceNode GoForHealing=new SequenceNode("go to get some health");
@@ -36,6 +38,8 @@ public class BehaviourTree
 
         HealthCheck.AddChildNode(GoForHealing);
 
+
+        //return to base if carrying a flag
         ConditionNode DoIHaveAFlag=new ConditionNode("Do I have a flag?",behaviours.CheckForFlags);
         SelectorNode ReturnFlags=new SelectorNode("return flags",false);
         ReturnFlags.AddChildNode(FleeFromEnemies);
@@ -51,17 +55,19 @@ public class BehaviourTree
         mainBehaviour.AddChildNode(completeObjectives);
 
 
+        //go to get the power up
         RandomNode GoForPowerUp = new RandomNode("Go for the PowerUp",0.3f);
         GoForPowerUp.AddChildNode(new ActionNode("Get the PowerUp",new ActionNode.ActionNodeDelegate(behaviours.GetPowerUp)));
         completeObjectives.AddChildNode(GoForPowerUp);
 
         start.AddChildNode(mainBehaviour);
 
-
+        //Get the enemy flag and return my flag if it is taken
+        //getting the enemy flag has higher priority
         SelectorNode GetFlags = new SelectorNode("Get Flags");
 
         
-
+        //get the enemy flag
         ConditionNode EnemyFlagAvailable = new ConditionNode("check for enemy flag",behaviours.CheckForEnemyFlag);
 
         SequenceNode GetEnemyFlag=new SequenceNode("Get enemy flag");
@@ -71,14 +77,16 @@ public class BehaviourTree
         EnemyFlagAvailable.AddChildNode(GetEnemyFlag);
         GetFlags.AddChildNode(EnemyFlagAvailable);
 
-        ConditionNode MyFlagTaken = new ConditionNode("Is my flag taken?",behaviours.CheckForMyFlag);
 
+        
+        ConditionNode MyFlagTaken = new ConditionNode("Is my flag taken?",behaviours.CheckForMyFlag);
+        //target the enemy flag carrier
         SequenceNode HuntEnemyFC=new SequenceNode("Hunt enemy FC");
         HuntEnemyFC.AddChildNode(new ActionNode("Target enemy FC",new ActionNode.ActionNodeDelegate(behaviours.TargetEnemyFC)));
         HuntEnemyFC.AddChildNode(AttackEnemy);
 
         GetFlags.AddChildNode(HuntEnemyFC);
-
+        //get my own flag
         SequenceNode ReturnMyFlag=new SequenceNode("Return my flag sequence");
         ReturnMyFlag.AddChildNode(new ActionNode("Move to my flag",new ActionNode.ActionNodeDelegate(behaviours.MoveToFriendlyFlag)));
         ReturnMyFlag.AddChildNode(new ActionNode("pick up my flag",new ActionNode.ActionNodeDelegate(behaviours.PickUpFriendlyFlag)));
@@ -89,9 +97,10 @@ public class BehaviourTree
         
         completeObjectives.AddChildNode(GetFlags);
 
-    
+        // move to my flag carrier
         mainBehaviour.AddChildNode(new ActionNode("Move to my FC",new ActionNode.ActionNodeDelegate(behaviours.MoveToMyFC)));
 
+        //return to my base, this has lowest priority and serves to guard the base if we have both flags
         mainBehaviour.AddChildNode(new ActionNode("return to base",new ActionNode.ActionNodeDelegate(behaviours.ReturnToBase)));  
     }
 

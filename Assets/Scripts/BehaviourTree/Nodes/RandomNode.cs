@@ -19,15 +19,15 @@ public class RandomNode : Node
     ///If it is smaller either Ticks the child node if it has one or returns a success.
     ///If it is higher the Node fails and the child does not get ticked.
     ///</summary>
-    public override NodeStates Tick() { 
-        Debug.Log(m_name);
+    public override NodeState Tick() { 
+        //Debug.Log(m_name);
         //if the random number is smaller than the tick chance the child node if it exists gets ticked, otherwise returns a success
         if(Random.Range(0,1)<m_tickChance){
             if(m_childNode!=null)return m_childNode.Tick();
-            else return NodeStates.SUCCESS;
+            else return NodeState.SUCCESS;
         }
         //fails if random number is higher than tick chance so node returns failure
-        else return NodeStates.FAILURE;
+        else return NodeState.FAILURE;
     }
 
     public void AddChildNode(Node child)

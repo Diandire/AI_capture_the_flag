@@ -8,11 +8,6 @@ public class SequenceNode : Node {
     
     private string m_name;
 
-    public SequenceNode(List<Node> nodes)
-    { 
-        m_childNodes = nodes; 
-    } 
-
     public SequenceNode(string name)
     { 
         m_childNodes = new List<Node>();
@@ -25,29 +20,29 @@ public class SequenceNode : Node {
     ///Returns success if all children are successful.
     ///Otherwise returns running.
     ///</summary>
-    public override NodeStates Tick() 
+    public override NodeState Tick() 
     {   
             if(runningNode>=m_childNodes.Count)runningNode=0;
             //Debug.Log(m_name);
             switch (m_childNodes[runningNode].Tick()) 
             { 
                 //return failure and set the running child to 0 so the sequence failed and the next time it is ticked it starts over
-                case NodeStates.FAILURE: 
-                    m_nodeState = NodeStates.FAILURE; 
+                case NodeState.FAILURE: 
+                    m_nodeState = NodeState.FAILURE; 
                     runningNode=0;
                     return m_nodeState;      
 
                 //on success set the running node to the next child               
-                case NodeStates.SUCCESS: 
+                case NodeState.SUCCESS: 
                     runningNode++;
                     break; 
 
                 //keep ticking the current child until it returns either success or failure
-                case NodeStates.RUNNING: 
+                case NodeState.RUNNING: 
                     break; 
             }
         //return running if not all of the child nodes have been successfull
-        m_nodeState = (runningNode==(m_childNodes.Count-1))? NodeStates.SUCCESS : NodeStates.RUNNING; 
+        m_nodeState = (runningNode==(m_childNodes.Count-1))? NodeState.SUCCESS : NodeState.RUNNING; 
         return m_nodeState; 
     } 
 

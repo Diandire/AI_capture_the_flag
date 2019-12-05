@@ -9,11 +9,6 @@ public class SelectorNode : Node {
     //decides if the selector should lock into a node if it returns running or keep checking from the start every update
     private bool m_lockSelection;
 
-    public SelectorNode(List<Node> nodes,bool lockSelection=true) { 
-        m_childNodes = nodes; 
-        m_lockSelection=lockSelection;
-    }
-
      public SelectorNode(string name, bool lockSelection=true) { 
         m_childNodes = new List<Node>(); 
         m_name=name;
@@ -25,26 +20,26 @@ public class SelectorNode : Node {
     ///Keeps ticking that child until it is successfull causing the selector to start checking from the first child again.
     ///Or fails as well and the selector keeps checking the next child
     ///</summary>
-    public override NodeStates Tick() {
+    public override NodeState Tick() {
         if(runningNode>=m_childNodes.Count)runningNode=0;
         //Debug.Log(m_name);
         switch (m_childNodes[runningNode].Tick()) 
         { 
             //on failure set the current node to the next one
-            case NodeStates.FAILURE: 
-                m_nodeState = NodeStates.FAILURE; 
+            case NodeState.FAILURE: 
+                m_nodeState = NodeState.FAILURE; 
                 //if the current node is not the last one return running
-                if(runningNode<(m_childNodes.Count-1))m_nodeState=NodeStates.RUNNING; 
+                if(runningNode<(m_childNodes.Count-1))m_nodeState=NodeState.RUNNING; 
                 runningNode++;
                 break;     
             //on success return success and reset the current node               
-            case NodeStates.SUCCESS: 
+            case NodeState.SUCCESS: 
                 runningNode=0;
-                m_nodeState = NodeStates.SUCCESS; 
+                m_nodeState = NodeState.SUCCESS; 
                 return m_nodeState;
             //on running keep the current node if locked in else reset the current node
-            case NodeStates.RUNNING: 
-                m_nodeState = NodeStates.RUNNING; 
+            case NodeState.RUNNING: 
+                m_nodeState = NodeState.RUNNING; 
                 if(!m_lockSelection)runningNode=0;
                 return m_nodeState;
         }

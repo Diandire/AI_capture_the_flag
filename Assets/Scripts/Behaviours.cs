@@ -20,49 +20,49 @@ public class Behaviours : AgentActions
 ///<summary>
 ///Move to the enemy Flag
 ///</summary>
- public NodeStates MoveToEnemyFlag()
+ public NodeState MoveToEnemyFlag()
     {
         switch(_agentData.EnemyTeam)
         {
             case AgentData.Teams.RedTeam : 
              if(MoveTo(GameObject.Find(Names.RedFlag)))
-             return _agentSenses.IsItemInReach(GameObject.Find(Names.RedFlag))?NodeStates.SUCCESS:NodeStates.RUNNING;
-             else return NodeStates.FAILURE;
+             return _agentSenses.IsItemInReach(GameObject.Find(Names.RedFlag))?NodeState.SUCCESS:NodeState.RUNNING;
+             else return NodeState.FAILURE;
 
             case AgentData.Teams.BlueTeam : 
              if(MoveTo(GameObject.Find(Names.BlueFlag)))
-             return _agentSenses.IsItemInReach(GameObject.Find(Names.BlueFlag))?NodeStates.SUCCESS:NodeStates.RUNNING;
-             else return NodeStates.FAILURE;
+             return _agentSenses.IsItemInReach(GameObject.Find(Names.BlueFlag))?NodeState.SUCCESS:NodeState.RUNNING;
+             else return NodeState.FAILURE;
             
-            default : return NodeStates.FAILURE;
+            default : return NodeState.FAILURE;
         }
     }
 
 ///<summary>
 ///Move to my own Flag
 ///</summary>
-    public NodeStates MoveToFriendlyFlag()
+    public NodeState MoveToFriendlyFlag()
     {
         switch(_agentData.FriendlyTeam)
         {
             case AgentData.Teams.RedTeam : 
              if(MoveTo(GameObject.Find(Names.RedFlag)))
-             return _agentSenses.IsItemInReach(GameObject.Find(Names.RedFlag))?NodeStates.SUCCESS:NodeStates.RUNNING;
-             else return NodeStates.FAILURE;
+             return _agentSenses.IsItemInReach(GameObject.Find(Names.RedFlag))?NodeState.SUCCESS:NodeState.RUNNING;
+             else return NodeState.FAILURE;
 
             case AgentData.Teams.BlueTeam : 
              if(MoveTo(GameObject.Find(Names.BlueFlag)))
-             return _agentSenses.IsItemInReach(GameObject.Find(Names.BlueFlag))?NodeStates.SUCCESS:NodeStates.RUNNING;
-             else return NodeStates.FAILURE;
+             return _agentSenses.IsItemInReach(GameObject.Find(Names.BlueFlag))?NodeState.SUCCESS:NodeState.RUNNING;
+             else return NodeState.FAILURE;
             
-            default : return NodeStates.FAILURE;
+            default : return NodeState.FAILURE;
         }
     }
 
 ///<summary>
 ///Pick up the enemy Flag
 ///</summary>
-    public NodeStates PickUpEnemyFlag()
+    public NodeState PickUpEnemyFlag()
     {
         switch(_agentData.EnemyTeam)
         {
@@ -70,14 +70,14 @@ public class Behaviours : AgentActions
 
             case AgentData.Teams.BlueTeam : return CollectItem(GameObject.Find(Names.BlueFlag));
             
-            default : return NodeStates.FAILURE;
+            default : return NodeState.FAILURE;
         }
     }
 
 ///<summary>
 ///Pick up my own Flag
 ///</summary>
-    public NodeStates PickUpFriendlyFlag()
+    public NodeState PickUpFriendlyFlag()
     {
         switch(_agentData.FriendlyTeam)
         {
@@ -85,7 +85,7 @@ public class Behaviours : AgentActions
 
             case AgentData.Teams.BlueTeam : return CollectItem(GameObject.Find(Names.BlueFlag));
             
-            default : return NodeStates.FAILURE;
+            default : return NodeState.FAILURE;
         }
     }
 
@@ -128,7 +128,7 @@ public class Behaviours : AgentActions
 ///<summary>
 ///Targets the closest enemy Agent
 ///</summary>
-    public NodeStates LookForEnemy()
+    public NodeState LookForEnemy()
     {
         List<GameObject> enemiesInView=_agentSenses.GetEnemiesInView();
         if(enemiesInView.Count>0)
@@ -143,16 +143,16 @@ public class Behaviours : AgentActions
                     targetAgent=enemy;
                 }
             }
-            return NodeStates.SUCCESS;
+            return NodeState.SUCCESS;
         }
         targetAgent=null;
-        return NodeStates.FAILURE;
+        return NodeState.FAILURE;
     }
 
 ///<summary>
 ///Flee from my current target
 ///</summary>
-    public NodeStates FleeFromEnemy()
+    public NodeState FleeFromEnemy()
     {
         return Flee(targetAgent);
     }
@@ -160,23 +160,23 @@ public class Behaviours : AgentActions
 ///<summary>
 ///Walk towards my current target
 ///</summary>
-    public NodeStates WalkToTarget()
+    public NodeState WalkToTarget()
     {
-        if(targetAgent==null)return NodeStates.FAILURE;
-        else if(MoveTo(targetAgent)) return _agentSenses.IsInAttackRange(targetAgent)?NodeStates.SUCCESS:NodeStates.RUNNING;
-        else return NodeStates.FAILURE;
+        if(targetAgent==null)return NodeState.FAILURE;
+        else if(MoveTo(targetAgent)) return _agentSenses.IsInAttackRange(targetAgent)?NodeState.SUCCESS:NodeState.RUNNING;
+        else return NodeState.FAILURE;
     }
 
 ///<summary>
 ///Target the enemy Flag carrier
 ///</summary>
-    public NodeStates TargetEnemyFC()
+    public NodeState TargetEnemyFC()
     {
-        if(CheckForEnemyFC()==null)return NodeStates.FAILURE;
+        if(CheckForEnemyFC()==null)return NodeState.FAILURE;
         else 
         {
             targetAgent=CheckForEnemyFC();
-            return NodeStates.SUCCESS;
+            return NodeState.SUCCESS;
         }
     }
 
@@ -211,7 +211,7 @@ public class Behaviours : AgentActions
 ///<summary>
 ///Attack the current target
 ///</summary>
-    public NodeStates AttackTarget()
+    public NodeState AttackTarget()
     {
         return AttackEnemy(targetAgent);
     }
@@ -219,38 +219,38 @@ public class Behaviours : AgentActions
 ///<summary>
 ///return to my base
 ///</summary>
-    public NodeStates ReturnToBase()
+    public NodeState ReturnToBase()
     {
          switch(_agentData.FriendlyTeam)
         {
            case AgentData.Teams.RedTeam : 
              if(MoveTo(GameObject.Find(Names.RedBase)))
-             return _agentSenses.IsInAttackRange(GameObject.Find(Names.RedBase))?NodeStates.SUCCESS:NodeStates.RUNNING;
-             else return NodeStates.FAILURE;
+             return _agentSenses.IsInAttackRange(GameObject.Find(Names.RedBase))?NodeState.SUCCESS:NodeState.RUNNING;
+             else return NodeState.FAILURE;
 
             case AgentData.Teams.BlueTeam : 
              if(MoveTo(GameObject.Find(Names.BlueBase)))
-             return _agentSenses.IsInAttackRange(GameObject.Find(Names.BlueBase))?NodeStates.SUCCESS:NodeStates.RUNNING;
-             else return NodeStates.FAILURE;
+             return _agentSenses.IsInAttackRange(GameObject.Find(Names.BlueBase))?NodeState.SUCCESS:NodeState.RUNNING;
+             else return NodeState.FAILURE;
             
-            default : return NodeStates.FAILURE;
+            default : return NodeState.FAILURE;
         }
     }
 
 ///<summary>
 ///move to the carrier of enemy flag
 ///</summary>
-    public NodeStates MoveToMyFC()
+    public NodeState MoveToMyFC()
     {
-        if(CheckForFriendlyFC()==null)return NodeStates.FAILURE;
-        else if(MoveTo(CheckForFriendlyFC()))return _agentSenses.IsInAttackRange(CheckForFriendlyFC())?NodeStates.SUCCESS:NodeStates.RUNNING;
-        else return NodeStates.FAILURE;
+        if(CheckForFriendlyFC()==null)return NodeState.FAILURE;
+        else if(MoveTo(CheckForFriendlyFC()))return _agentSenses.IsInAttackRange(CheckForFriendlyFC())?NodeState.SUCCESS:NodeState.RUNNING;
+        else return NodeState.FAILURE;
     }
 
 ///<summary>
 ///Try to Heal myself
 ///</summary>
-    public NodeStates HealMySelf()
+    public NodeState HealMySelf()
     {
         return UseItem(GameObject.Find(Names.HealthKit));
     }
@@ -266,25 +266,25 @@ public class Behaviours : AgentActions
 ///<summary>
 ///Move to the Healthkit and pick it up
 ///</summary>
-    public NodeStates GetHealthkit()
+    public NodeState GetHealthkit()
     {
-        if(!blackBoard.HealthKitAvailable())return NodeStates.FAILURE;
+        if(!blackBoard.HealthKitAvailable())return NodeState.FAILURE;
         else if(MoveTo(GameObject.Find(Names.HealthKit)))
-             if(_agentSenses.IsItemInReach(GameObject.Find(Names.HealthKit))&&CollectItem(GameObject.Find(Names.HealthKit))==NodeStates.SUCCESS)return NodeStates.SUCCESS;
-             else return NodeStates.RUNNING;
-        else return NodeStates.FAILURE;
+             if(_agentSenses.IsItemInReach(GameObject.Find(Names.HealthKit))&&CollectItem(GameObject.Find(Names.HealthKit))==NodeState.SUCCESS)return NodeState.SUCCESS;
+             else return NodeState.RUNNING;
+        else return NodeState.FAILURE;
     }
 
 ///<summary>
 ///Move to the PowerUp and pick it up and uses it
 ///</summary>
-    public NodeStates GetPowerUp()
+    public NodeState GetPowerUp()
     {
-        if(!blackBoard.PowerUpAvailable())return NodeStates.FAILURE;
+        if(!blackBoard.PowerUpAvailable())return NodeState.FAILURE;
         else if(MoveTo(GameObject.Find(Names.PowerUp)))
-        if(_agentSenses.IsItemInReach(GameObject.Find(Names.PowerUp))&&CollectItem(GameObject.Find(Names.PowerUp))==NodeStates.SUCCESS)return UseItem(GameObject.Find(Names.PowerUp));
-        else return NodeStates.RUNNING;
-        else return NodeStates.FAILURE;
+        if(_agentSenses.IsItemInReach(GameObject.Find(Names.PowerUp))&&CollectItem(GameObject.Find(Names.PowerUp))==NodeState.SUCCESS)return UseItem(GameObject.Find(Names.PowerUp));
+        else return NodeState.RUNNING;
+        else return NodeState.FAILURE;
     }
 
 ///<summary>

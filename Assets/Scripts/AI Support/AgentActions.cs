@@ -124,7 +124,7 @@ public class AgentActions : MonoBehaviour
     /// A collected item is no longer visible to other AIs with the exception of the flag
     /// </summary>
     /// <param name="item">The item to pick up</param>
-    public NodeStates CollectItem(GameObject item)
+    public NodeState CollectItem(GameObject item)
     {
         if (item != null&&item.layer!=0)
         {
@@ -134,11 +134,11 @@ public class AgentActions : MonoBehaviour
                 if (item.GetComponent<Collectable>() != null)
                 {
                     item.GetComponent<Collectable>().Collect(_agentData);
-                    if(_agentInventory.AddItem(item)) return NodeStates.SUCCESS;                  
+                    if(_agentInventory.AddItem(item)) return NodeState.SUCCESS;                  
                 }
             }
         }
-        return NodeStates.FAILURE;
+        return NodeState.FAILURE;
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public class AgentActions : MonoBehaviour
     /// </summary>
     /// <param name="item">The item GameObject</param>
     /// <returns>true if the item was successfully used, false otherwise</returns>
-    public NodeStates UseItem(GameObject item)
+    public NodeState UseItem(GameObject item)
     {
         if (item != null)
         {
@@ -155,10 +155,10 @@ public class AgentActions : MonoBehaviour
             {
                 _agentInventory.RemoveItem(item.name);
                 item.GetComponent<IUsable>().Use(_agentData);
-                return NodeStates.SUCCESS;
+                return NodeState.SUCCESS;
             }
         }
-        return NodeStates.FAILURE;
+        return NodeState.FAILURE;
     }
 
     /// <summary>
@@ -166,7 +166,7 @@ public class AgentActions : MonoBehaviour
     /// A dropped item becomes visible and collectable
     /// </summary>
     /// <param name="item">The item to drop</param>
-    public NodeStates DropItem(GameObject item)
+    public NodeState DropItem(GameObject item)
     {
             // Check we actually have it and its collectable
             if (_agentInventory.HasItem(item.name) && item.GetComponent<Collectable>() != null)
@@ -184,16 +184,16 @@ public class AgentActions : MonoBehaviour
                     _agentInventory.RemoveItem(item.name);
 
                     item.GetComponent<Collectable>().Drop(_agentData, dropPosition);
-                    return NodeStates.SUCCESS;
+                    return NodeState.SUCCESS;
                 }
             }
-        return NodeStates.FAILURE;
+        return NodeState.FAILURE;
     }
 
     /// <summary>
     /// Drop every item in the inventory
     /// </summary>
-    public NodeStates DropAllItems()
+    public NodeState DropAllItems()
     {
         // Get a list of all the items in the inventory by key
         string[] inventoryKeys = _agentInventory.Items.Keys.ToArray();
@@ -207,14 +207,14 @@ public class AgentActions : MonoBehaviour
                 DropItem(item);
             }
         }
-        return NodeStates.SUCCESS;
+        return NodeState.SUCCESS;
     }
 
     /// <summary>
     /// Attack an enemy AI if it is within range, a powerup will increase the damage done
     /// </summary>
     /// <param name="target">The target to attack</param>
-    public NodeStates AttackEnemy(GameObject target)
+    public NodeState AttackEnemy(GameObject target)
     {
         try
         {
@@ -239,21 +239,21 @@ public class AgentActions : MonoBehaviour
                     }
                     target.GetComponent<AgentData>().TakeDamage(actualDamage);
                 }
-                return NodeStates.SUCCESS;
+                return NodeState.SUCCESS;
             }
         }
         }
-        catch(MissingReferenceException){return NodeStates.FAILURE;}
-        return NodeStates.FAILURE;
+        catch(MissingReferenceException){return NodeState.FAILURE;}
+        return NodeState.FAILURE;
     }
 
     /// <summary>
     /// Flee from an object by moving in the opposite direction
     /// </summary>
     /// <param name="enemy">The object to flee from (expected to be an enemy AI)</param>
-    public NodeStates Flee(GameObject enemy)
+    public NodeState Flee(GameObject enemy)
     {
-        if(enemy==null)return NodeStates.FAILURE;
+        if(enemy==null)return NodeState.FAILURE;
         // Turn away from the threat
         transform.rotation = Quaternion.LookRotation(transform.position - enemy.transform.position);
         Vector3 runTo = transform.position + transform.forward * _navAgent.speed;
@@ -265,7 +265,7 @@ public class AgentActions : MonoBehaviour
         // Check for a point to flee to
         UnityEngine.AI.NavMesh.SamplePosition(runTo, out navHit, _agentData.Speed, 1 << UnityEngine.AI.NavMesh.GetAreaFromName("Walkable"));
         _navAgent.SetDestination(navHit.position);
-        return NodeStates.SUCCESS;
+        return NodeState.SUCCESS;
     }
    
 

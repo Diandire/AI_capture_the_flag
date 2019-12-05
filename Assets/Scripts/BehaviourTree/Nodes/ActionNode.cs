@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections; 
  
 public class ActionNode : Node { 
-    public delegate NodeStates ActionNodeDelegate(); 
+    public delegate NodeState ActionNodeDelegate(); 
 
     public ActionNodeDelegate m_action; 
     private string m_name;
@@ -16,21 +16,21 @@ public class ActionNode : Node {
    ///<summary>
    ///Invokes the Behaviour bound to the action delegate
    ///</summary>
-    public override NodeStates Tick() { 
+    public override NodeState Tick() { 
         //Debug.Log(m_name);
         //return whatever the delegate returns
         switch (m_action()) { 
-            case NodeStates.SUCCESS: 
-                m_nodeState = NodeStates.SUCCESS; 
+            case NodeState.SUCCESS: 
+                m_nodeState = NodeState.SUCCESS; 
                 return m_nodeState; 
-            case NodeStates.FAILURE: 
-                m_nodeState = NodeStates.FAILURE; 
+            case NodeState.FAILURE: 
+                m_nodeState = NodeState.FAILURE; 
                 return m_nodeState; 
-            case NodeStates.RUNNING: 
-                m_nodeState = NodeStates.RUNNING; 
+            case NodeState.RUNNING: 
+                m_nodeState = NodeState.RUNNING; 
                 return m_nodeState; 
             default: 
-                m_nodeState = NodeStates.FAILURE; 
+                m_nodeState = NodeState.FAILURE; 
                 return m_nodeState; 
         } 
     }
