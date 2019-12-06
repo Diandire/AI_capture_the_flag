@@ -97,10 +97,10 @@ public class Behaviours : AgentActions
         switch(_agentData.FriendlyTeam)
         {
             case AgentData.Teams.RedTeam : 
-            return (!BlackBoard.RedFlagInBase||_agentData.HasFriendlyFlag);
+            return (!BlackBoard.RedFlagInBase);
 
             case AgentData.Teams.BlueTeam :
-            return (!BlackBoard.BlueFlagInBase||_agentData.HasFriendlyFlag);
+            return (!BlackBoard.BlueFlagInBase);
 
             default :
             return false;
@@ -115,10 +115,10 @@ public class Behaviours : AgentActions
         switch(_agentData.EnemyTeam)
         {
             case AgentData.Teams.RedTeam : 
-            return (_agentData.HasEnemyFlag||(!BlackBoard.RedFlagTaken&&((CheckForFriendlyFC()==null)||CheckForFriendlyFC().GetComponent<Behaviours>()._agentData.FriendlyTeam==_agentData.EnemyTeam)));
+            return ((!BlackBoard.RedFlagTaken&&((CheckForFriendlyFC()==null)||CheckForFriendlyFC().GetComponent<Behaviours>()._agentData.FriendlyTeam==_agentData.EnemyTeam)));
 
             case AgentData.Teams.BlueTeam :
-            return (_agentData.HasEnemyFlag||(!BlackBoard.RedFlagTaken&&((CheckForFriendlyFC()==null)||CheckForFriendlyFC().GetComponent<Behaviours>()._agentData.FriendlyTeam==_agentData.EnemyTeam)));
+            return ((!BlackBoard.RedFlagTaken&&((CheckForFriendlyFC()==null)||CheckForFriendlyFC().GetComponent<Behaviours>()._agentData.FriendlyTeam==_agentData.EnemyTeam)));
 
             default :
             return false;
@@ -282,8 +282,10 @@ public class Behaviours : AgentActions
     {
         if(!blackBoard.PowerUpAvailable())return NodeState.FAILURE;
         else if(MoveTo(GameObject.Find(Names.PowerUp)))
-        if(_agentSenses.IsItemInReach(GameObject.Find(Names.PowerUp))&&CollectItem(GameObject.Find(Names.PowerUp))==NodeState.SUCCESS)return UseItem(GameObject.Find(Names.PowerUp));
-        else return NodeState.RUNNING;
+        {
+            if(_agentSenses.IsItemInReach(GameObject.Find(Names.PowerUp))&&CollectItem(GameObject.Find(Names.PowerUp))==NodeState.SUCCESS)return UseItem(GameObject.Find(Names.PowerUp));
+            else return NodeState.RUNNING;
+        }
         else return NodeState.FAILURE;
     }
 

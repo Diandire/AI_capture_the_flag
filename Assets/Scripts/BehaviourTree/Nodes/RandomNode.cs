@@ -9,6 +9,10 @@ public class RandomNode : Node
     private string m_name;
     private float m_tickChance;
 
+    //bool used to lock the node into ticking the child node once the random generator succeeds once
+    //this prevents it from generating a new random number until it fails
+    private bool keepRunning=false;
+
     public RandomNode(string name,float chance) { 
         m_name=name; 
         m_tickChance=chance;
@@ -22,8 +26,15 @@ public class RandomNode : Node
     public override NodeState Tick() { 
         //Debug.Log(m_name);
         //if the random number is smaller than the tick chance the child node if it exists gets ticked, otherwise returns a success
-        if(Random.Range(0,1)<m_tickChance){
-            if(m_childNode!=null)return m_childNode.Tick();
+        float rng=Random.value;
+        //Debug.Log(rng);
+        if(rng<m_tickChance||keepRunning){
+            if(m_childNode!=null)
+            {
+                m_nodeState = m_childNode.Tick();
+                keepRunning=(m_nodeState==NodeState.RUNNING)?true:false;
+                return m_nodeState;
+            }
             else return NodeState.SUCCESS;
         }
         //fails if random number is higher than tick chance so node returns failure

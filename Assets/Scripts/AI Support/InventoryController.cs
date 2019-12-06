@@ -34,7 +34,7 @@ public class InventoryController : MonoBehaviour
             if(!_inventory.ContainsKey(item.name))
             {
                 _inventory.Add(item.name, item);
-                Debug.Log("AddItem Successfull");
+                //Debug.Log("AddItem Successfull");
                 return true;
             }
         }

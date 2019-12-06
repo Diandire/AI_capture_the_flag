@@ -56,7 +56,7 @@ public class BehaviourTree
 
 
         //go to get the power up
-        RandomNode GoForPowerUp = new RandomNode("Go for the PowerUp",0.3f);
+        RandomNode GoForPowerUp = new RandomNode("Go for the PowerUp",0.5f);
         GoForPowerUp.AddChildNode(new ActionNode("Get the PowerUp",new ActionNode.ActionNodeDelegate(behaviours.GetPowerUp)));
         completeObjectives.AddChildNode(GoForPowerUp);
 

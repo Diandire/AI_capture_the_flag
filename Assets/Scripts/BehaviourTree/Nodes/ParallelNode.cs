@@ -18,7 +18,7 @@ public class ParallelNode : Node {
     public override NodeState Tick() {
         m_nodeState = NodeState.FAILURE;  
         foreach (Node node in m_childNodes) { 
-            Debug.Log(m_name);
+            //Debug.Log(m_name);
             switch (node.Tick()) { 
                 case NodeState.FAILURE: 
                     continue; 
